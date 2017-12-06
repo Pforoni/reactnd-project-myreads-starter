@@ -34,7 +34,6 @@ class SearchBooks extends Component {
         this.setState({ query: query.trim() })
     }
     render() {
-        //const { libraryBooks } = this.props
         const { query, libraryBooks } = this.state
         return (
             <div className="search-books">
