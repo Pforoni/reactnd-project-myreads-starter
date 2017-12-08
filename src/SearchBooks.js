@@ -7,11 +7,14 @@ import sortBy from 'sort-by'
 class SearchBooks extends Component {
     state = {
         query: '',
-        libraryBooks: []
+        libraryBooks: [],
+        myBooks: []
     }
 
-    static propTypes = {
-        //libraryBooks: PropTypes.array.isRequired,
+    componentDidMount() {
+        BooksAPI.getAll().then((myBooks) => {
+            this.setState({ myBooks })
+        })
     }
 
     clearQuery = () => {
@@ -22,9 +25,8 @@ class SearchBooks extends Component {
         this.setState({ libraryBooks: [] })
     }
     updateQuery = (query) => {
-        //debugger;
         if (query.length >= 3) {
-            BooksAPI.search(query, 20).then((libraryBooks) => {
+            BooksAPI.search(query, 30).then((libraryBooks) => {
                 this.setState({ libraryBooks })
             })
         }
@@ -33,8 +35,31 @@ class SearchBooks extends Component {
 
         this.setState({ query: query.trim() })
     }
+
+    handleValueSelect = (id) => {
+        let shelfCurrentListBook = this.state.myBooks.filter((b) => b.id === id)
+        if (shelfCurrentListBook.length > 0)
+            return shelfCurrentListBook[0].shelf
+
+        return "none"
+    }
+
+    handleChange = (e) => {
+        e.preventDefault();
+        const objBookSelected = { id: e.target.id }
+        const newShelf = e.target.value
+        let shelf = []
+
+        BooksAPI.update(objBookSelected, newShelf).then((shelfList) => {
+            alert("Book added successfully!")
+        })
+    }
+
+
     render() {
         const { query, libraryBooks } = this.state
+
+        libraryBooks.sort(sortBy('title'))
         return (
             <div className="search-books">
                 <div className="search-books-bar">
@@ -56,7 +81,7 @@ class SearchBooks extends Component {
                                     <div className="book-top">
                                         <div className="book-cover" style={{ width: 128, height: 193, backgroundImage: `url(${library.imageLinks.thumbnail})` }}></div>
                                         <div className="book-shelf-changer">
-                                            <select>
+                                            <select id={library.id} value={this.handleValueSelect(library.id)} onChange={this.handleChange}>
                                                 <option value="none" disabled>Move to...</option>
                                                 <option value="currentlyReading">Currently Reading</option>
                                                 <option value="wantToRead">Want to Read</option>
@@ -66,10 +91,10 @@ class SearchBooks extends Component {
                                         </div>
                                     </div>
                                     <div className="book-title">{library.title}</div>
-                                    {library.authors  && library.authors.map((author) =>
+                                    {library.authors && library.authors.map((author) =>
                                         <div key={author} className="book-authors">{author}</div>
                                     )}
-                                    
+
                                 </div>
                             </li>
                         )}

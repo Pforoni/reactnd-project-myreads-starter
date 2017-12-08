@@ -1,13 +1,10 @@
 import React, { Component } from 'react'
 import { Link } from 'react-router-dom'
-import PropTypes from 'prop-types'
 import * as BooksAPI from './utils/BooksAPI'
+import sortBy from 'sort-by'
 
 class MyBooks extends Component {
-    /*static propTypes = {
-        books: PropTypes.array.isRequired,
-    }*/
-
+   
     state = {
         books: [],
     }
@@ -23,7 +20,7 @@ class MyBooks extends Component {
         const newShelf = e.target.value
         let shelf = []
 
-        BooksAPI.update(objBookSelected, newShelf).then((shelfList) => {     
+        BooksAPI.update(objBookSelected, newShelf).then((shelfList) => {
             shelf = this.state.books.filter((c) => c.id === objBookSelected.id)
             this.setState((state) => ({
                 books: state.books.filter((c) => c.id !== objBookSelected.id)
@@ -36,9 +33,6 @@ class MyBooks extends Component {
     }
 
     render() {
-        //const { books } = this.props
-        //const { wantToRead, currentlyReading, read } = this.state
-        //const { shelf } = this.state
         const { books } = this.state
 
         let bookswantToRead
@@ -49,8 +43,12 @@ class MyBooks extends Component {
             bookscurrentlyReading = books.filter((book) => book.shelf === "currentlyReading")
             bookswantToRead = books.filter((book) => book.shelf === "wantToRead")
             booksread = books.filter((book) => book.shelf === "read")
-        }
 
+            bookscurrentlyReading.sort(sortBy('title'))
+            bookswantToRead.sort(sortBy('title'))
+            booksread.sort(sortBy('title'))
+        }
+        
         return (
             <div className="list-books">
                 <div className="list-books-title">
@@ -161,7 +159,8 @@ class MyBooks extends Component {
                     <Link
                         to="/search"
                         className="add-contact"
-                    >Add a book</Link>
+                   >Add a book</Link>
+                   
                 </div>
             </div>
         )
