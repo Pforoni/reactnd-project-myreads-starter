@@ -1,14 +1,32 @@
 import React, { Component } from 'react'
 import { Link } from 'react-router-dom'
-import PropTypes from 'prop-types'
 import * as BooksAPI from './utils/BooksAPI'
 import sortBy from 'sort-by'
+import Autocomplete from 'react-autocomplete'
 
 class SearchBooks extends Component {
     state = {
-        query: '',
+        value: '',
         libraryBooks: [],
-        myBooks: []
+        myBooks: [],
+        searchTerms: [
+            { label: 'Android' }, { label: 'Art' }, { label: 'Artificial Intelligence' }, { label: 'Astronomy' }, { label: 'Austen' },
+            { label: 'Baseball' }, { label: 'Basketball' }, { label: 'Bhagat' }, { label: 'Biography' }, { label: 'Brief' }, { label: 'Business' },
+            { label: 'Camus' }, { label: 'Cervantes' }, { label: 'Christie' }, { label: 'Classics' }, { label: 'Comics' }, { label: 'Cook' }, { label: 'Cricket' }, { label: 'Cycling' },
+            { label: 'Desai' }, { label: 'Design' }, { label: 'Development' }, { label: 'Digital Marketing' }, { label: 'Drama' }, { label: 'Drawing' }, { label: 'Dumas' },
+            { label: 'Education' }, { label: 'Everything' },
+            { label: 'Fantasy' }, { label: 'Film' }, { label: 'Finance' }, { label: 'First' }, { label: 'Fitness' }, { label: 'Football' }, { label: 'Future' },
+            { label: 'Games' }, { label: 'Gandhi' },
+            { label: 'Homer' }, { label: 'Horror' }, { label: 'Hugo' },
+            { label: 'Ibsen' }, { label: 'Journey' }, { label: 'Kafka' }, { label: 'King' }, { label: 'Lahiri' }, { label: 'Larsson' }, { label: 'Learn' }, { label: 'Literary' }, { label: 'Fiction' },
+            { label: 'Make' }, { label: 'Manage' }, { label: 'Marquez' }, { label: 'Money' }, { label: 'Mystery' },
+            { label: 'Negotiate' }, { label: 'Painting' }, { label: 'Philosophy' }, { label: 'Photography' }, { label: 'Poetry' }, { label: 'Production' }, { label: 'Programming' },
+            { label: 'React' }, { label: 'Redux' }, { label: 'River' }, { label: 'Robotics' }, { label: 'Rowling' },
+            { label: 'Satire' }, { label: 'Science Fiction' }, { label: 'Shakespeare' }, { label: 'Singh' }, { label: 'Swimming' },
+            { label: 'Tale' }, { label: 'Thrun' }, { label: 'Time' }, { label: 'Tolstoy' }, { label: 'Travel' },
+            { label: 'Ultimate' }, { label: 'Virtual Reality' }, { label: 'Web Development' }, { label: 'iOS' },
+        ]
+
     }
 
     componentDidMount() {
@@ -17,13 +35,10 @@ class SearchBooks extends Component {
         })
     }
 
-    clearQuery = () => {
-        this.setState({ query: '' })
-    }
-
     clearLibraryBooks = () => {
         this.setState({ libraryBooks: [] })
     }
+
     updateQuery = (query) => {
         if (query.length >= 3) {
             BooksAPI.search(query, 30).then((libraryBooks) => {
@@ -33,7 +48,7 @@ class SearchBooks extends Component {
         else
             this.clearLibraryBooks()
 
-        this.setState({ query: query.trim() })
+        this.setState({ value: query.trim() })
     }
 
     handleValueSelect = (id) => {
@@ -48,7 +63,7 @@ class SearchBooks extends Component {
         e.preventDefault();
         const objBookSelected = { id: e.target.id }
         const newShelf = e.target.value
-        let shelf = []
+        //let shelf = []
 
         BooksAPI.update(objBookSelected, newShelf).then((shelfList) => {
             alert("Book added successfully!")
@@ -57,21 +72,33 @@ class SearchBooks extends Component {
 
 
     render() {
-        const { query, libraryBooks } = this.state
+        const { value, libraryBooks } = this.state
 
         libraryBooks.sort(sortBy('title'))
         return (
             <div className="search-books">
                 <div className="search-books-bar">
                     <Link className="close-search" to="/">Close</Link>
-                    <div className="search-books-input-wrapper">
-                        <input
-                            type="text"
-                            placeholder="Search by title or author"
-                            value={query}
+                    <div>
+                        <Autocomplete
+                            items={this.state.searchTerms}
+                            shouldItemRender={(item, value) => item.label.toLowerCase().indexOf(value.toLowerCase()) > -1}
+                            getItemValue={item => item.label}
+                            renderItem={(item, highlighted) =>
+                                <div className="search-books-input-wrapper"
+                                    key={item.label}
+                                    style={{ backgroundColor: highlighted ? '#eee' : 'transparent' }}
+                                >
+                                    {item.label}
+                                </div>
+                                
+                            }
+                            value={this.state.value}
                             onChange={(event) => this.updateQuery(event.target.value)}
+                            onSelect={(value) => this.updateQuery(value)}
                         />
                     </div>
+
                 </div>
                 <div className="search-books-results">
                     <ol className="books-grid">
@@ -79,7 +106,10 @@ class SearchBooks extends Component {
                             <li key={library.id}>
                                 <div className="book">
                                     <div className="book-top">
-                                        <div className="book-cover" style={{ width: 128, height: 193, backgroundImage: `url(${library.imageLinks.thumbnail})` }}></div>
+                                    {library.imageLinks ?
+                                        <div className="book-cover" style={{ width: 128, height: 193, backgroundImage: `url(${library.imageLinks.thumbnail})` }} ></div>
+                                        : <div className="book-cover" style={{ width: 128, height: 193} }> </div>
+                                    }
                                         <div className="book-shelf-changer">
                                             <select id={library.id} value={this.handleValueSelect(library.id)} onChange={this.handleChange}>
                                                 <option value="none" disabled>Move to...</option>
