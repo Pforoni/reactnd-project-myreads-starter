@@ -48,7 +48,7 @@ class SearchBooks extends Component {
         else
             this.clearLibraryBooks()
 
-        this.setState({ value: query.trim() })
+        this.setState({ value: query })
     }
 
     handleValueSelect = (id) => {
@@ -73,8 +73,9 @@ class SearchBooks extends Component {
 
     render() {
         const { value, libraryBooks } = this.state
-
-        libraryBooks.sort(sortBy('title'))
+        
+        if(libraryBooks.hasOwnProperty('length') && libraryBooks.length > 0)    
+            libraryBooks.sort(sortBy('title'))
         return (
             <div className="search-books">
                 <div className="search-books-bar">

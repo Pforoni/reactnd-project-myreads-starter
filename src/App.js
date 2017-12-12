@@ -1,10 +1,10 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { Route } from 'react-router-dom'
 import MyBooks from './MyBooks'
 import SearchBooks from './SearchBooks'
 import './App.css'
 
-class BooksApp extends Component {
+const BooksApp = React.createClass({
   render() {
     return (
       <div className="app">
@@ -19,6 +19,6 @@ class BooksApp extends Component {
       </div>
     )
   }
-}
+})
 
 export default BooksApp
