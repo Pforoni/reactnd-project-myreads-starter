@@ -1,7 +1,5 @@
-import React, { Component } from 'react'
-
-class BooksComponent extends Component {
-
+import React from 'react'
+const BooksComponent = React.createClass({
     render() {
         const { booksShelf, typeShelf, changeShelf } = this.props
         return (
@@ -14,7 +12,7 @@ class BooksComponent extends Component {
                                 <li key={itemBook.id}>
                                     <div className="book">
                                         <div className="book-top">
-                                            <div className="book-cover" style={{ width: 128, height: 193, backgroundImage: `url(${itemBook.imageLinks.thumbnail})` }}></div>
+                                            <div className="book-cover" style={{backgroundImage: `url(${itemBook.imageLinks && itemBook.imageLinks.thumbnail})` }}></div>
                                             <div className="book-shelf-changer">
                                                 <select id={itemBook.id} value={itemBook.shelf} onChange={event => changeShelf(event)}>
                                                     <option value="none" disabled>Move to...</option>
@@ -41,6 +39,7 @@ class BooksComponent extends Component {
         )
     }
 
-}
+})
+
 
 export default BooksComponent
