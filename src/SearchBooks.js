@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import { Link } from 'react-router-dom'
 import * as BooksAPI from './utils/BooksAPI'
+import BooksComponent from './BooksComponent'
 import sortBy from 'sort-by'
 import Autocomplete from 'react-autocomplete'
 
@@ -26,7 +27,6 @@ class SearchBooks extends Component {
             { label: 'Tale' }, { label: 'Thrun' }, { label: 'Time' }, { label: 'Tolstoy' }, { label: 'Travel' },
             { label: 'Ultimate' }, { label: 'Virtual Reality' }, { label: 'Web Development' }, { label: 'iOS' },
         ]
-
     }
 
     componentDidMount() {
@@ -40,7 +40,7 @@ class SearchBooks extends Component {
     }
 
     updateQuery = (query) => {
-        if (query.length >= 3) {
+        if (query.length) {
             BooksAPI.search(query, 30).then((libraryBooks) => {
                 this.setState({ libraryBooks })
             })
@@ -73,8 +73,8 @@ class SearchBooks extends Component {
 
     render() {
         const { value, libraryBooks } = this.state
-        
-        if(libraryBooks.hasOwnProperty('length') && libraryBooks.length > 0)    
+
+        if (libraryBooks.hasOwnProperty('length') && libraryBooks.length > 0)
             libraryBooks.sort(sortBy('title'))
         return (
             <div className="search-books">
@@ -92,7 +92,7 @@ class SearchBooks extends Component {
                                 >
                                     {item.label}
                                 </div>
-                                
+
                             }
                             value={this.state.value}
                             onChange={(event) => this.updateQuery(event.target.value)}
@@ -102,34 +102,11 @@ class SearchBooks extends Component {
 
                 </div>
                 <div className="search-books-results">
-                    <ol className="books-grid">
-                        {libraryBooks.length > 0 && libraryBooks.map((library) =>
-                            <li key={library.id}>
-                                <div className="book">
-                                    <div className="book-top">
-                                    {library.imageLinks ?
-                                        <div className="book-cover" style={{ width: 128, height: 193, backgroundImage: `url(${library.imageLinks.thumbnail})` }} ></div>
-                                        : <div className="book-cover" style={{ width: 128, height: 193} }> </div>
-                                    }
-                                        <div className="book-shelf-changer">
-                                            <select id={library.id} value={this.handleValueSelect(library.id)} onChange={this.handleChange}>
-                                                <option value="none" disabled>Move to...</option>
-                                                <option value="currentlyReading">Currently Reading</option>
-                                                <option value="wantToRead">Want to Read</option>
-                                                <option value="read">Read</option>
-                                                <option value="none">None</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <div className="book-title">{library.title}</div>
-                                    {library.authors && library.authors.map((author) =>
-                                        <div key={author} className="book-authors">{author}</div>
-                                    )}
-
-                                </div>
-                            </li>
-                        )}
-                    </ol>
+                    {libraryBooks.hasOwnProperty('length') && libraryBooks.length > 0 && (
+                        <BooksComponent
+                            booksShelf={libraryBooks}
+                        />
+                    )}
                 </div>
             </div>
         )
