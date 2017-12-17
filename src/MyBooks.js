@@ -15,20 +15,14 @@ class MyBooks extends Component {
         })
     }
 
-    handleChange = (e) => {
+    changeBookShelf = (e, selBook) => {
         e.preventDefault();
-        const objBookSelected = { id: e.target.id }
         const newShelf = e.target.value
-        let shelf = []
 
-        BooksAPI.update(objBookSelected, newShelf).then((shelfList) => {
-            shelf = this.state.books.filter((c) => c.id === objBookSelected.id)
+        BooksAPI.update(selBook.itemBook, newShelf).then((shelfList) => {
+            selBook.itemBook.shelf = newShelf
             this.setState((state) => ({
-                books: state.books.filter((c) => c.id !== objBookSelected.id)
-            }))
-            shelf[0].shelf = newShelf
-            this.setState((state) => ({
-                books: state.books.concat([shelf[0]])
+                books: state.books
             }))
         })
     }
@@ -61,21 +55,21 @@ class MyBooks extends Component {
                             <BooksComponent
                                 booksShelf={bookscurrentlyReading}
                                 typeShelf={"Currently Reading"}
-                                changeShelf={this.handleChange}
+                                changeShelf={this.changeBookShelf}
                             />
                         )}
                         {books && books.length > 0 && bookswantToRead.length > 0 && (
                             <BooksComponent
                                 booksShelf={bookswantToRead}
                                 typeShelf={"Want to Read"}
-                                changeShelf={this.handleChange}
+                                changeShelf={this.changeBookShelf}
                             />
                         )}
                         {books && books.length > 0 && booksread.length > 0 && (
                             <BooksComponent
                                 booksShelf={booksread}
                                 typeShelf={"Read"}
-                                changeShelf={this.handleChange}
+                                changeShelf={this.changeBookShelf}
                             />
                         )}
                     </div>

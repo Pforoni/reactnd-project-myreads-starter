@@ -59,17 +59,14 @@ class SearchBooks extends Component {
         return "none"
     }
 
-    handleChange = (e) => {
+    sendBookToShelf = (e, bookLib) => {
         e.preventDefault();
-        const objBookSelected = { id: e.target.id }
-        const newShelf = e.target.value
-        //let shelf = []
+        const dest = e.target.value
 
-        BooksAPI.update(objBookSelected, newShelf).then((shelfList) => {
-            alert("Book added successfully!")
+        BooksAPI.update(bookLib.itemBook, dest).then((shelfList) => {
+            alert("Book [" + bookLib.itemBook.title + "] added successfully!")
         })
     }
-
 
     render() {
         const { value, libraryBooks } = this.state
@@ -105,6 +102,8 @@ class SearchBooks extends Component {
                     {libraryBooks.hasOwnProperty('length') && libraryBooks.length > 0 && (
                         <BooksComponent
                             booksShelf={libraryBooks}
+                            changeShelf={this.sendBookToShelf}
+                            isInShelf={this.handleValueSelect}
                         />
                     )}
                 </div>

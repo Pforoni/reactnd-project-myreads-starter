@@ -1,7 +1,8 @@
 import React from 'react'
 const BooksComponent = React.createClass({
     render() {
-        const { booksShelf, typeShelf, changeShelf } = this.props
+        const { booksShelf, typeShelf, changeShelf, isInShelf } = this.props
+        debugger
         return (
             <div>
                 <div className="bookshelf">
@@ -14,7 +15,7 @@ const BooksComponent = React.createClass({
                                         <div className="book-top">
                                             <div className="book-cover" style={{backgroundImage: `url(${itemBook.imageLinks && itemBook.imageLinks.thumbnail})` }}></div>
                                             <div className="book-shelf-changer">
-                                                <select id={itemBook.id} value={itemBook.shelf} onChange={event => changeShelf(event)}>
+                                                <select id={itemBook.id} value={itemBook.shelf? itemBook.shelf : isInShelf(itemBook.id)} onChange={event => changeShelf(event, {itemBook})}>
                                                     <option value="none" disabled>Move to...</option>
                                                     <option value="currentlyReading">Currently Reading</option>
                                                     <option value="wantToRead">Want to Read</option>
